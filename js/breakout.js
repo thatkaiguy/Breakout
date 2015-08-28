@@ -54,7 +54,7 @@
       var pctFrmCenter = (Math.abs(ballCenterX - paddleCenterX) / (paddle.width / 2));
 
       var sign = this.dx < 0 ? -1 : 1;
-      this.dx = sign * pctFrmCenter * 4;
+      this.dx = sign * pctFrmCenter * 2;
       ball.bottomRightCoord.y = paddle.topLeftCoord.y - 1;
       ball.topLeftCoord.y = ball.bottomRightCoord.y - ball.size;
     } else if (ball.bottomRightCoord.y > this.game.screenHeight) {
