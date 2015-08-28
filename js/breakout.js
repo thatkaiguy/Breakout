@@ -57,6 +57,9 @@
       this.dx = sign * pctFrmCenter * 4;
       ball.bottomRightCoord.y = paddle.topLeftCoord.y - 1;
       ball.topLeftCoord.y = ball.bottomRightCoord.y - ball.size;
+    } else if (ball.bottomRightCoord.y > this.game.screenHeight) {
+      this.game.lives -= 1;
+      this.game.reset(false);
     }
     this.topLeftCoord.x += this.dx;
     this.bottomRightCoord.x += this.dx;
@@ -100,15 +103,15 @@
     }
   }
 
-  Paddle.prototype.moveRight = function(isMoving) {
+  Paddle.prototype.moveRight = function (isMoving) {
     this._moveRight = isMoving;
   }
 
-  Paddle.prototype.moveLeft = function(isMoving) {
+  Paddle.prototype.moveLeft = function (isMoving) {
     this._moveLeft = isMoving;
   }
 
-  Paddle.prototype.move = function() {
+  Paddle.prototype.move = function () {
     if (this._moveRight &&
         this.bottomRightCoord.x < this.game.screenWidth) {
       this.topLeftCoord.x += 4;
@@ -120,7 +123,7 @@
     }
   }
 
-  var Brick = BreakOut.Brick = function(topLeftCoord, bottomRightCoord) {
+  var Brick = BreakOut.Brick = function (topLeftCoord, bottomRightCoord) {
     this.topLeftCoord = topLeftCoord;
     this.bottomRightCoord = bottomRightCoord;
     this.isBroken = false;
@@ -152,9 +155,10 @@
     this.paddle = new BreakOut.Paddle({ game: this });
     this.bricks = this.createBricks();
     this.brickCount = this.bricks.length;
+    this.lives = 3;
   }
 
-  Game.prototype.createBricks = function() {
+  Game.prototype.createBricks = function () {
     var cols = 8
     var rows = 4
     var padding = 5;
@@ -179,9 +183,9 @@
     var game = this;
     this.balls.forEach(function (ball) { ball.render(ctx); });
     this.paddle.render(ctx);
-    this.bricks.forEach(function(brick) {
+    this.bricks.forEach(function (brick) {
       if (brick.isBroken) { return; }
-      this.balls.forEach(function(ball) {
+      this.balls.forEach(function (ball) {
         if  ( !(ball.bottomRightCoord.y < brick.topLeftCoord.y) &&
               !(ball.topLeftCoord.y > brick.bottomRightCoord.y) &&
               !(ball.bottomRightCoord.x < brick.topLeftCoord.x) &&
@@ -234,25 +238,29 @@
   }
 
   Game.prototype.isOver = function () {
-    return this.balls.every(function(ball){
-      return (ball.bottomRightCoord.y > this.screenHeight);
-    }.bind(this)) || this.brickCount < 1;
+    return this.lives < 0 || this.brickCount < 1;
   }
 
-  Game.prototype.reset = function () {
+  Game.prototype.reset = function (isFullReset) {
     this.screenWidth = 525;
     this.screenHeight = 400;
-    this.balls = [ new BreakOut.Ball({ game: this }) ];
-    this.paddle = new BreakOut.Paddle({ game: this });
-    this.bricks = this.createBricks();
-    this.brickCount = this.bricks.length;
+    if (isFullReset) {
+      this.balls = [ new BreakOut.Ball({ game: this }) ];
+      this.paddle = new BreakOut.Paddle({ game: this });
+      this.bricks = this.createBricks();
+      this.brickCount = this.bricks.length;
+      this.lives = 3;
+    } else {
+      this.balls = [ new BreakOut.Ball({ game: this }) ];
+      this.paddle = new BreakOut.Paddle({ game: this });
+    }
   }
 
-  Game.prototype.score = function() {
+  Game.prototype.score = function () {
     return this.bricks.length - this.brickCount;
   }
 
-  Game.prototype.isWon = function() {
-    return this.brickCount < 1;
+  Game.prototype.isWon = function () {
+    return this.brickCount < 1 && this.lives >= 0;
   }
 })();

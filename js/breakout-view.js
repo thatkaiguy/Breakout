@@ -36,7 +36,7 @@
 
   View.prototype.reset = function(){
     this.isStarted = true;
-    this.game.reset();
+    this.game.reset(true);
     clearInterval(this.intervalId);
     this.intervalId = setInterval(this.draw.bind(this), 1);
   }
@@ -75,12 +75,14 @@
     this.clear();
     if (this.isStarted) {
       this.game.render(this.ctx);
+      this.ctx.fillText("Score: " + this.game.score(), 43, 15);
+      this.ctx.fillText("Lives: " + this.game.lives, 480, 15);
+
+      this.game.nextFrame();
       if (this.game.isOver()) {
         this.showGameOverMsg();
         clearInterval(this.intervalId);
       }
-      this.ctx.fillText("Score: " + this.game.score(), 43, 15);
-      this.game.nextFrame();
     } else {
       this.renderStartScreen();
     }
